@@ -12,6 +12,11 @@ export function postsLoader(): Loader {
     load: async ({ store, logger, generateDigest, renderMarkdown }) => {
       logger.info('Loading posts from database...');
 
+      // Skip db connection during testing
+      if (!import.meta.env.TURSO_DATABASE_URL) {
+        return;
+      }
+
       // Create database connection
       const db = createDb({
         url: import.meta.env.TURSO_DATABASE_URL || '',

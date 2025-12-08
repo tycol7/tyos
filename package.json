@@ -1,0 +1,38 @@
+{
+  "name": "tyos",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": ["packages/*", "web", "api"],
+  "scripts": {
+    "typecheck": "bun run typecheck:web && bun run typecheck:api && bun run typecheck:packages",
+    "typecheck:web": "cd web && bun x astro check",
+    "typecheck:api": "cd api && tsc --noEmit",
+    "typecheck:packages": "cd packages/db && tsc --noEmit && cd ../image-utils && tsc --noEmit",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write ."
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@types/bun": "latest",
+    "@types/hast": "^3.0.4",
+    "astro": "^5.14.6",
+    "drizzle-kit": "^0.31.8",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.6",
+    "@astrojs/mdx": "^4.3.12",
+    "@aws-sdk/client-s3": "^3.946.0",
+    "@aws-sdk/credential-providers": "^3.946.0",
+    "@libsql/client": "^0.15.15",
+    "@picocss/pico": "^2.1.1",
+    "dprint": "^0.50.2",
+    "drizzle-orm": "^0.45.0",
+    "prettier": "^3.7.4",
+    "prettier-plugin-astro": "^0.14.1",
+    "rehype-external-links": "^3.0.0",
+    "sharp": "^0.34.5",
+    "unist-util-visit": "^5.0.0"
+  }
+}

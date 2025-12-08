@@ -1,0 +1,27 @@
+{
+  "name": "",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@astrojs/mdx": "^4.3.7",
+    "@picocss/pico": "^2.0.6",
+    "@tyos/db": "workspace:*",
+    "astro": "^5.14.6",
+    "dprint": "^0.50.2",
+    "drizzle-orm": "^0.45.0",
+    "rehype-external-links": "^3.0.0",
+    "typescript": "^5.6.3"
+  },
+  "devDependencies": {
+    "prettier": "^3.6.2",
+    "prettier-plugin-astro": "^0.14.1"
+  }
+}

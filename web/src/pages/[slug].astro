@@ -1,0 +1,24 @@
+---
+import { getCollection } from 'astro:content';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Layout from '../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const pages = await getCollection('pages');
+  return pages.map((page) => ({
+    params: { slug: page.id },
+    props: { page },
+  }));
+}
+
+const { page } = Astro.props;
+
+const breadcrumbs = [{ text: page.data.title, href: '#' }];
+---
+
+<Layout title={page.data.title}>
+  <Breadcrumbs breadcrumbs={breadcrumbs} />
+  <h2>{page.data.title}</h2>
+  <div set:html={page.data.renderedContent.html} />
+  <p><a href="/">← Back to home</a></p>
+</Layout>

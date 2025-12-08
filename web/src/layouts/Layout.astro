@@ -1,0 +1,139 @@
+---
+import '@picocss/pico';
+import { Picture } from 'astro:assets';
+import tyler from '../assets/tyler.jpg';
+
+interface Props {
+  title: string;
+  frontmatter?: {
+    title?: string;
+  };
+}
+
+const { title: titleFromProps, frontmatter } = Astro.props;
+const { title: titleFromFrontmatter } = frontmatter ?? {};
+const title = titleFromProps ?? titleFromFrontmatter;
+
+const links = [
+  { href: '/photos', text: 'Photos' },
+  { href: '/posts', text: 'Posts' },
+  { href: '/uses', text: 'Uses' },
+  { href: '/contact', text: 'Contact' },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Tyler Coleman personal website" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <title>{title}</title>
+    <script
+      is:inline
+      defer
+      src="https://cloud.umami.is/script.js"
+      data-website-id="4fdb8078-129b-4a56-a257-ba4fca6ba4c6"></script>
+  </head>
+  <body>
+    <header class="container">
+      <div>
+        <h1><a href="/">Tyler Coleman</a></h1>
+        <!-- Mobile navigation (stacked) -->
+        <aside class="mobile-only">
+          <nav>
+            <ul>
+              {
+                links.map((link) => (
+                  <li>
+                    <a href={link.href} rel="noreferrer">
+                      {link.text}
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+          </nav>
+        </aside>
+
+        <!-- Desktop navigation (horizontal) -->
+        <nav class="desktop-only">
+          <ul>
+            {
+              links.map((link) => (
+                <li>
+                  <a href={link.href} rel="noreferrer">
+                    {link.text}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+      </div>
+      <div>
+        <Picture src={tyler} alt="Tyler Coleman" width={240} height={240} />
+      </div>
+    </header>
+    <hr />
+    <main class="container">
+      <slot />
+    </main>
+  </body>
+</html>
+
+<style>
+  header {
+    display: flex;
+    justify-content: space-between;
+    max-width: 996px;
+    padding-top: 2rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    align-items: top;
+
+    img {
+      width: 120px;
+      height: 120px;
+    }
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+    }
+
+    .mobile-only {
+      display: block;
+    }
+
+    .desktop-only {
+      display: none;
+    }
+
+    @media (min-width: 769px) {
+      .mobile-only {
+        display: none;
+      }
+
+      .desktop-only {
+        display: block;
+      }
+    }
+  }
+
+  h1 {
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+  }
+
+  main {
+    text-wrap: pretty;
+    width: 100%;
+    max-width: 996px;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-bottom: 4rem;
+  }
+</style>

@@ -1,0 +1,75 @@
+---
+import { albums, photos } from '@tyos/db';
+import { asc, eq } from 'drizzle-orm';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Layout from '../../layouts/Layout.astro';
+import { db } from '../../lib/db.ts';
+import { getVariantUrl } from '../../lib/photo-utils.ts';
+
+export async function getStaticPaths() {
+  const allAlbums = await db.select().from(albums);
+
+  return await Promise.all(
+    allAlbums.map(async (album) => {
+      const albumPhotos = await db
+        .select()
+        .from(photos)
+        .where(eq(photos.albumId, album.id))
+        .orderBy(asc(photos.sortOrder));
+
+      return {
+        params: { id: album.id },
+        props: { album, photos: albumPhotos },
+      };
+    })
+  );
+}
+
+const { album, photos: albumPhotos } = Astro.props;
+
+const breadcrumbs = [
+  { text: 'Photos', href: '/photos' },
+  { text: album.name, href: '#' },
+];
+---
+
+<Layout title={album.name}>
+  <Breadcrumbs breadcrumbs={breadcrumbs} />
+  <h2>{album.name}</h2>
+  {
+    albumPhotos.map((photo) => (
+      <picture>
+        <source
+          type="image/avif"
+          srcset={getVariantUrl(album.id, photo.filename, 1920, 'avif')}
+        />
+        <source
+          type="image/webp"
+          srcset={getVariantUrl(album.id, photo.filename, 1920, 'webp')}
+        />
+        <img
+          src={getVariantUrl(album.id, photo.filename, 1920, 'jpeg')}
+          alt={`${album.name} - ${photo.filename}`}
+          loading="lazy"
+        />
+      </picture>
+    ))
+  }
+  <nav>
+    <ul>
+      <li>
+        <a href="/photos">← Back to photos</a>
+      </li>
+      <li>
+        <a href="#">↑ Back to top</a>
+      </li>
+    </ul>
+  </nav>
+</Layout>
+
+<style>
+  picture {
+    display: block;
+    margin-bottom: 1rem;
+  }
+</style>

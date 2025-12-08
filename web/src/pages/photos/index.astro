@@ -1,0 +1,104 @@
+---
+import { albums as albumsTable, photos } from '@tyos/db';
+import { and, eq } from 'drizzle-orm';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Layout from '../../layouts/Layout.astro';
+import { db } from '../../lib/db.ts';
+import { getVariantUrl } from '../../lib/photo-utils.ts';
+
+// Fetch all albums from database
+const albums = await db.select().from(albumsTable);
+
+// Fetch hero photo for each album
+const albumsWithHero = await Promise.all(
+  albums.map(async (album) => {
+    const [heroPhoto] = await db
+      .select()
+      .from(photos)
+      .where(and(eq(photos.albumId, album.id), eq(photos.isHero, true)))
+      .limit(1);
+
+    return {
+      id: album.id,
+      name: album.name,
+      heroFilename: heroPhoto.filename,
+    };
+  })
+);
+
+const breadcrumbs = [{ text: 'Photos', href: '#' }];
+---
+
+<Layout title="Photos">
+  <Breadcrumbs breadcrumbs={breadcrumbs} />
+  <h2>Photos</h2>
+  <p>
+    Various photos from my travels. Mostly shot with my Fujifilm X100F (and the
+    occasional iPhone because cameras are heavy).
+  </p>
+  <div class="albums-container">
+    {
+      albumsWithHero.map(({ id, name, heroFilename }) => (
+        <div>
+          <a href={`/photos/${id}`}>
+            <div class="thumbnail-container">
+              <picture>
+                <source
+                  type="image/avif"
+                  srcset={getVariantUrl(id, heroFilename, 800, 'avif')}
+                />
+                <source
+                  type="image/webp"
+                  srcset={getVariantUrl(id, heroFilename, 800, 'webp')}
+                />
+                <img
+                  src={getVariantUrl(id, heroFilename, 800, 'jpeg')}
+                  alt={name}
+                  class="thumbnail"
+                  loading="lazy"
+                />
+              </picture>
+            </div>
+            {name}
+          </a>
+        </div>
+      ))
+    }
+  </div>
+
+  <div><a href="/">← Back to home</a></div>
+</Layout>
+
+<style>
+  .albums-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    margin-bottom: 1rem;
+    gap: 1rem;
+    justify-content: start;
+  }
+
+  @media (max-width: 1023px) {
+    .albums-container {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .albums-container {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .thumbnail-container {
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+  }
+
+  .thumbnail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+</style>

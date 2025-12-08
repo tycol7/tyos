@@ -1,0 +1,47 @@
+---
+import { getCollection } from 'astro:content';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts');
+  return posts.map((post) => ({
+    params: { id: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+
+const breadcrumbs = [
+  { text: 'Posts', href: '/posts' },
+  { text: post.data.title, href: '#' },
+];
+---
+
+<Layout title={post.data.title ?? "Tyler Coleman"}>
+  <Breadcrumbs breadcrumbs={breadcrumbs} />
+  <h1>{post.data.title}</h1>
+  <p>
+    <em
+      >{
+        post.data.pubDate?.toLocaleDateString("en-US", {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+        })
+      }
+    </em>
+  </p>
+  <article set:html={post.data.renderedContent.html} />
+  <nav>
+    <ul>
+      <li>
+        <a href="/posts">← Back to posts</a>
+      </li>
+      <li>
+        <a href="#">↑ Back to top</a>
+      </li>
+    </ul>
+  </nav>
+</Layout>

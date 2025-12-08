@@ -1,0 +1,52 @@
+---
+import { getCollection } from 'astro:content';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Layout from '../../layouts/Layout.astro';
+const posts = await getCollection('posts');
+const breadcrumbs = [{ text: 'Posts', href: '#' }];
+---
+
+<Layout title="Posts">
+  <Breadcrumbs breadcrumbs={breadcrumbs} />
+  <h2>Posts</h2>
+  <ul>
+    {
+      posts
+        .filter((post) => post.data.pubDate != null)
+        .map((post) => (
+          <li>
+            <span class="post-date">
+              {post.data.pubDate?.toLocaleDateString("en-US", {
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+              })}
+            </span>
+            <a href={`/posts/${post.id}`}>
+              {post.data.title}
+            </a>
+          </li>
+        ))
+    }
+  </ul>
+  <a href="/">← Back to home</a>
+</Layout>
+
+<style>
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  li {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .post-date {
+    display: inline-block;
+    min-width: 180px;
+    flex-shrink: 0;
+  }
+</style>

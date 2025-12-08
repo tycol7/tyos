@@ -1,0 +1,97 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const experience = [
+  {
+    position: 'Solutions Engineer',
+    company: 'Snap Inc.',
+    link: 'https://snap.com',
+    dates: '2025',
+  },
+  {
+    position: 'Software Engineer',
+    company: 'Oddball',
+    link: 'https://oddball.io',
+    dates: '2024–2025',
+  },
+  {
+    position: 'Customer Engineer',
+    company: 'PlanetScale',
+    link: 'https://planetscale.com',
+    dates: '2023–2024',
+  },
+  {
+    position: 'Software Engineer',
+    company: 'OpenComp',
+    link: 'https://opencomp.com',
+    dates: '2022–2023',
+  },
+  {
+    position: 'Partner Engineer',
+    company: 'YouTube',
+    link: 'https://about.youtube',
+    dates: '2021–2022',
+  },
+  {
+    position: 'Technical Project Manager',
+    company: 'Meta',
+    link: 'https://about.meta.com/realitylabs/',
+    dates: '2020–2021',
+  },
+  {
+    position: 'Global Field Engineer',
+    company: 'Alarm.com',
+    link: 'https://alarm.com',
+    dates: '2019–2020',
+  },
+  {
+    position: 'Lieutenant (Cryptology)',
+    company: 'U.S. Navy',
+    link: 'https://www.navy.com/',
+    dates: '2013–2019',
+  },
+];
+---
+
+<Layout title="Tyler Coleman">
+  <h2>Now</h2>
+  <ul>
+    <li>
+      Product Engineer at <a href="https://www.samaya.ai" rel="noreferrer"
+        >Samaya AI</a
+      >
+      <span>2025–Present</span>
+    </li>
+  </ul>
+  <h2>Experience</h2>
+  <ul>
+    {
+      experience.map((job) => (
+        <li>
+          {job.position} at{" "}
+          <a href={job.link} rel="noreferrer">
+            {job.company}
+          </a>
+          <span>{job.dates}</span>
+        </li>
+      ))
+    }
+  </ul>
+  <h2>Education</h2>
+  <ul>
+    <li>M.S., Computer Science, Johns Hopkins University</li>
+    <li>B.S., Computer Science, U.S. Naval Academy</li>
+  </ul>
+</Layout>
+
+<style>
+  span {
+    float: right;
+  }
+
+  @media (max-width: 768px) {
+    span {
+      display: none;
+    }
+  }
+</style>

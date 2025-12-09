@@ -1,6 +1,16 @@
 name: Netlify Deploy
 
 on:
+  workflow_dispatch:
+    inputs:
+      deploy_type:
+        description: 'Deploy type (preview or production)'
+        required: true
+        default: 'preview'
+        type: choice
+        options:
+          - preview
+          - production
   pull_request:
     paths:
       - 'web/**'
@@ -35,26 +45,26 @@ jobs:
           TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
 
       - name: Deploy to Netlify (Preview)
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && inputs.deploy_type == 'preview')
         uses: nwtgck/actions-netlify@v3.0
         with:
           publish-dir: './web/dist'
           production-deploy: false
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          deploy-message: 'Deploy from PR #${{ github.event.number }}'
-          alias: pr-${{ github.event.number }}
+          deploy-message: ${{ github.event_name == 'pull_request' && format('Deploy from PR #{0}', github.event.number) || 'Manual preview deploy from admin' }}
+          alias: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.number) || 'preview' }}
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
 
       - name: Deploy to Netlify (Production)
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && inputs.deploy_type == 'production')
         uses: nwtgck/actions-netlify@v3.0
         with:
           publish-dir: './web/dist'
           production-deploy: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          deploy-message: 'Production deploy from ${{ github.sha }}'
+          deploy-message: ${{ github.event_name == 'push' && format('Production deploy from {0}', github.sha) || 'Manual production deploy from admin' }}
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}

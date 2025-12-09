@@ -9,22 +9,30 @@ import { config } from './config.ts';
 import { errorHandler } from './middleware/error.ts';
 
 import albumsRouter from './routes/albums.ts';
+import deployRouter from './routes/deploy.ts';
 // Routes
 import health from './routes/health.ts';
 import photosRouter from './routes/photos.ts';
-import publish from './routes/publish.ts';
 
 const app = new Hono();
 
 // Middleware
 app.use('*', logger());
-app.use('*', cors());
+app.use(
+  '*',
+  cors({
+    origin: config.allowedOrigins,
+    credentials: true,
+    allowHeaders: ['Content-Type', 'Authorization'],
+    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  })
+);
 
 // Routes
 app.route('/health', health);
 app.route('/albums', albumsRouter);
 app.route('/photos', photosRouter);
-app.route('/publish', publish);
+app.route('/deploy', deployRouter);
 
 // Error handling
 app.onError(errorHandler);

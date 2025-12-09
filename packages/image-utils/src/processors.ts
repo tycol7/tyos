@@ -64,7 +64,9 @@ export async function processImage(
   // Auto-convert HEIC to PNG if needed
   const processableInput = await prepareInput(input);
 
-  let pipeline = sharp(processableInput);
+  // Auto-rotate based on EXIF orientation (fixes portrait photos)
+  // IMPORTANT: This must be done BEFORE creating the sharp pipeline
+  let pipeline = sharp(processableInput, { failOnError: false }).rotate();
 
   // Resize if width specified
   if (options.width) {

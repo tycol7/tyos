@@ -17,18 +17,18 @@ const allBreadcrumbs = [{ text: 'Home', href: '/' }, ...breadcrumbs];
 
 // Get all items except the last one (which should not be clickable)
 const linkableBreadcrumbs = allBreadcrumbs.slice(0, -1);
-const lastBreadcrumb = allBreadcrumbs[allBreadcrumbs.length - 1];
+const lastBreadcrumb = allBreadcrumbs.at(-1);
 ---
 
 <nav aria-label="breadcrumb" class={className}>
-    <ul>
-        {
-            linkableBreadcrumbs.map((item) => (
-                <li>
-                    <a href={item.href}>{item.text}</a>
-                </li>
-            ))
-        }
-        <li>{lastBreadcrumb.text}</li>
-    </ul>
+  <ul>
+    {
+      linkableBreadcrumbs.map((item) => (
+        <li>
+          <a href={item.href}>{item.text}</a>
+        </li>
+      ))
+    }
+    <li>{lastBreadcrumb?.text}</li>
+  </ul>
 </nav>

@@ -11,7 +11,7 @@ import { db } from '../lib/db.ts';
 import { authMiddleware } from '../middleware/auth.ts';
 import { NotFoundError, UploadError, ValidationError } from '../middleware/error.ts';
 import { diffPhotoState } from '../utils/diff.ts';
-import { deleteFromR2, getPhotoVariantKeys, uploadToR2 } from '../utils/r2-upload.ts';
+import { deleteFromR2, uploadToR2 } from '../utils/r2-upload.ts';
 import { bulkUpdatePhotosSchema, sanitizeFilename } from '../utils/validation.ts';
 
 const photosRouter = new Hono();
@@ -39,8 +39,15 @@ photosRouter.post('/albums/:id/photos', async (c) => {
   }
 
   // Validate file type and size
-  const allowedTypes = ['image/jpeg', 'image/png', 'image/heic'];
-  if (!allowedTypes.includes(file.type)) {
+  // HEIC files can report as 'image/heic', 'image/heif', or even empty string
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/heic', 'image/heif'];
+  const fileExtension = file.name.toLowerCase().split('.').pop();
+  const allowedExtensions = ['jpg', 'jpeg', 'png', 'heic', 'heif'];
+
+  const isValidType =
+    allowedTypes.includes(file.type) || allowedExtensions.includes(fileExtension || '');
+
+  if (!isValidType) {
     throw new ValidationError('Invalid file type. Allowed: JPEG, PNG, HEIC');
   }
 
@@ -181,7 +188,8 @@ photosRouter.put('/albums/:id/photos', async (c) => {
   return c.json({ updated: updates.length });
 });
 
-// DELETE /photos/:id - Delete single photo
+// DELETE /photos/:id - Delete photo from database only
+// Note: Does NOT delete from R2 since Astro static site may still reference it
 photosRouter.delete('/:id', async (c) => {
   const id = c.req.param('id');
 
@@ -191,11 +199,7 @@ photosRouter.delete('/:id', async (c) => {
     throw new NotFoundError('Photo not found');
   }
 
-  // Delete original and all variants from R2
-  const keys = getPhotoVariantKeys(photo.albumId, photo.filename);
-  await Promise.allSettled(keys.map((key) => deleteFromR2(key)));
-
-  // Delete photo from DB
+  // Delete photo from DB only (preserve R2 files for Astro site)
   await db.delete(photos).where(eq(photos.id, id));
 
   // If deleted photo was hero, make first remaining photo the new hero

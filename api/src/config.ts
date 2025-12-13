@@ -31,11 +31,16 @@ export const config = {
     token: getEnv('API_AUTH_TOKEN'),
   },
 
-  // Netlify
-  netlify: {
-    buildHookUrl: getEnv('NETLIFY_BUILD_HOOK_URL'),
+  // GitHub
+  github: {
+    token: getEnv('GITHUB_TOKEN'),
+    repoOwner: getEnv('GITHUB_REPO_OWNER'),
+    repoName: getEnv('GITHUB_REPO_NAME'),
   },
 
   // Server
   port: Number.parseInt(process.env.PORT || '3000', 10),
+  allowedOrigins: getEnv('ALLOWED_ORIGINS')
+    .split(',')
+    .map((origin) => origin.trim()),
 };

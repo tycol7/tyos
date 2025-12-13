@@ -51,7 +51,7 @@ jobs:
           publish-dir: './web/dist'
           production-deploy: false
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          deploy-message: ${{ github.event_name == 'pull_request' && format('Deploy from PR #{0}', github.event.number) || 'Manual preview deploy from admin' }}
+          deploy-message: "${{ github.event_name == 'pull_request' && format('Deploy from PR {0}', github.event.number) || 'Manual preview deploy from admin' }}"
           alias: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.number) || 'preview' }}
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
@@ -64,7 +64,7 @@ jobs:
           publish-dir: './web/dist'
           production-deploy: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          deploy-message: ${{ github.event_name == 'push' && format('Production deploy from {0}', github.sha) || 'Manual production deploy from admin' }}
+          deploy-message: "${{ github.event_name == 'push' && format('Production deploy from {0}', github.sha) || 'Manual production deploy from admin' }}"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}

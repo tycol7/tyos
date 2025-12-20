@@ -1,19 +1,10 @@
+import type { PostResponse } from '@tyos/db';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { apiRequest } from '../lib/api-client';
 
-interface Post {
-  id: string;
-  slug: string;
-  title: string;
-  content: string;
-  pubDate: number | null;
-  createdAt: number;
-  updatedAt: number;
-}
-
 interface PostsResponse {
-  posts: Post[];
+  posts: PostResponse[];
 }
 
 function formatDate(timestamp: number): string {
@@ -25,7 +16,7 @@ function formatDate(timestamp: number): string {
 }
 
 export default function Posts() {
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [posts, setPosts] = useState<PostResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

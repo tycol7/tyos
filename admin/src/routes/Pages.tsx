@@ -1,18 +1,10 @@
+import type { PageResponse } from '@tyos/db';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { apiRequest } from '../lib/api-client';
 
-interface Page {
-  id: string;
-  slug: string;
-  title: string;
-  content: string;
-  createdAt: number;
-  updatedAt: number;
-}
-
 interface PagesResponse {
-  pages: Page[];
+  pages: PageResponse[];
 }
 
 function formatDate(timestamp: number): string {
@@ -24,7 +16,7 @@ function formatDate(timestamp: number): string {
 }
 
 export default function Pages() {
-  const [pages, setPages] = useState<Page[]>([]);
+  const [pages, setPages] = useState<PageResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

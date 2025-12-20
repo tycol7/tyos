@@ -26,6 +26,34 @@ export const bulkUpdatePhotosSchema = z.object({
   ),
 });
 
+// Page validation schemas
+export const createPageSchema = z.object({
+  slug: z.string().min(1).max(100),
+  title: z.string().min(1).max(200),
+  content: z.string(),
+});
+
+export const updatePageSchema = z.object({
+  slug: z.string().min(1).max(100).optional(),
+  title: z.string().min(1).max(200).optional(),
+  content: z.string().optional(),
+});
+
+// Post validation schemas
+export const createPostSchema = z.object({
+  slug: z.string().min(1).max(100),
+  title: z.string().min(1).max(200),
+  content: z.string(),
+  pubDate: z.number().int().nullable().optional(),
+});
+
+export const updatePostSchema = z.object({
+  slug: z.string().min(1).max(100).optional(),
+  title: z.string().min(1).max(200).optional(),
+  content: z.string().optional(),
+  pubDate: z.number().int().nullable().optional(),
+});
+
 // Filename sanitization
 export function sanitizeFilename(filename: string): string {
   // Remove path traversal attempts

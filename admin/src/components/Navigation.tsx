@@ -80,6 +80,18 @@ export default function Navigation() {
               >
                 Photos
               </Link>
+              <Link
+                to="/pages"
+                className={`px-3 py-2 rounded-md text-sm font-medium ${isActive('/pages')}`}
+              >
+                Pages
+              </Link>
+              <Link
+                to="/posts"
+                className={`px-3 py-2 rounded-md text-sm font-medium ${isActive('/posts')}`}
+              >
+                Posts
+              </Link>
             </div>
           </div>
           <div className="flex gap-2">

@@ -12,7 +12,9 @@ import albumsRouter from './routes/albums.ts';
 import deployRouter from './routes/deploy.ts';
 // Routes
 import health from './routes/health.ts';
+import pagesRouter from './routes/pages.ts';
 import photosRouter from './routes/photos.ts';
+import postsRouter from './routes/posts.ts';
 
 const app = new Hono();
 
@@ -32,6 +34,8 @@ app.use(
 app.route('/health', health);
 app.route('/albums', albumsRouter);
 app.route('/photos', photosRouter);
+app.route('/pages', pagesRouter);
+app.route('/posts', postsRouter);
 app.route('/deploy', deployRouter);
 
 // Error handling

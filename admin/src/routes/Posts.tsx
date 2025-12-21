@@ -57,12 +57,12 @@ export default function Posts() {
     <div>
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Posts</h1>
-        <button
-          type="button"
+        <Link
+          to="/posts/new"
           className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
         >
           New Post
-        </button>
+        </Link>
       </div>
 
       {posts.length === 0 ? (

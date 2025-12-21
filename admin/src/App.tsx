@@ -9,6 +9,7 @@ import Pages from './routes/Pages';
 import Photos from './routes/Photos';
 import PostDetail from './routes/PostDetail';
 import PostEdit from './routes/PostEdit';
+import PostNew from './routes/PostNew';
 import Posts from './routes/Posts';
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
         <Route path="pages/:pageId/edit" element={<PageEdit />} />
         <Route path="pages/:pageId" element={<PageDetail />} />
         <Route path="posts" element={<Posts />} />
+        <Route path="posts/new" element={<PostNew />} />
         <Route path="posts/:postId/edit" element={<PostEdit />} />
         <Route path="posts/:postId" element={<PostDetail />} />
         <Route path="*" element={<NotFound />} />

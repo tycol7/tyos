@@ -5,12 +5,14 @@
 import { randomUUID } from 'node:crypto';
 import { asc, eq, sql } from 'drizzle-orm';
 import { Hono } from 'hono';
+import sharp from 'sharp';
 import { albums, photos } from '../../../packages/db/src/index.ts';
 import { generateVariants } from '../../../packages/image-utils/src/index.ts';
 import { db } from '../lib/db.ts';
 import { authMiddleware } from '../middleware/auth.ts';
 import { NotFoundError, UploadError, ValidationError } from '../middleware/error.ts';
 import { diffPhotoState } from '../utils/diff.ts';
+import { type ExifData, extractExifData } from '../utils/exif.ts';
 import { deleteFromR2, uploadToR2 } from '../utils/r2-upload.ts';
 import { bulkUpdatePhotosSchema, sanitizeFilename } from '../utils/validation.ts';
 
@@ -66,6 +68,23 @@ photosRouter.post('/albums/:id/photos', async (c) => {
     const buffer = await file.arrayBuffer();
     const imageBuffer = Buffer.from(buffer);
 
+    // Extract EXIF metadata
+    let exifData: ExifData = {
+      camera: null,
+      lens: null,
+      fStop: null,
+      shutterSpeed: null,
+      iso: null,
+    };
+    try {
+      const metadata = await sharp(imageBuffer).metadata();
+      if (metadata.exif) {
+        exifData = extractExifData(metadata.exif);
+      }
+    } catch (error) {
+      console.warn('Failed to extract EXIF metadata:', error);
+    }
+
     // Upload original to R2
     const originalKey = `albums/${albumId}/${sanitized}`;
     await uploadToR2(originalKey, imageBuffer, file.type);
@@ -105,6 +124,11 @@ photosRouter.post('/albums/:id/photos', async (c) => {
         filename: sanitized,
         isHero,
         sortOrder,
+        camera: exifData.camera,
+        lens: exifData.lens,
+        fStop: exifData.fStop,
+        shutterSpeed: exifData.shutterSpeed,
+        iso: exifData.iso,
       })
       .returning();
 

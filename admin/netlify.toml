@@ -1,0 +1,52 @@
+# Netlify configuration for tyOS Admin UI
+# Learn more: https://docs.netlify.com/configure-builds/file-based-configuration/
+
+[build]
+  # Base directory for the build
+  base = "admin/"
+
+  # Directory to publish (relative to base)
+  publish = "dist/"
+
+  # Build command
+  command = "bun run build"
+
+  # Functions directory
+  functions = "netlify/functions"
+
+# SPA routing: serve index.html for all non-file routes
+# Exclude /.netlify/* paths (for functions)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  conditions = {Role = [""], Cookie = []}
+  force = false
+
+# Environment variables
+# Note: Actual values should be set in Netlify UI for security
+# [build.environment]
+  # Client-side variables (exposed to browser)
+  # VITE_R2_PUBLIC_URL is set in Netlify UI
+
+  # Server-side variables (Netlify Functions only - NOT exposed to browser)
+  # These must be set in Netlify UI > Site settings > Environment variables
+  # JWT_SECRET = "random-secret-for-signing-tokens"
+  # ADMIN_USERNAME = "your-username"
+  # ADMIN_PASSWORD = "your-password"
+  # API_URL = "https://tyos-api.fly.dev"
+  # API_AUTH_TOKEN = "your-fly-api-token"
+
+# Deploy preview configuration
+[context.deploy-preview]
+  # Use same build command for previews
+  command = "bun run build"
+
+# Branch deploy configuration
+[context.branch-deploy]
+  # Use same build command for branch deploys
+  command = "bun run build"
+
+# Production context (main branch)
+[context.production]
+  command = "bun run build"

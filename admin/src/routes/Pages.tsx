@@ -55,20 +55,11 @@ export default function Pages() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Pages</h1>
-        <button
-          type="button"
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-        >
-          New Page
-        </button>
-      </div>
+      <h1 className="text-3xl font-bold mb-8">Pages</h1>
 
       {pages.length === 0 ? (
         <div className="text-center py-12 bg-gray-50 rounded-lg">
-          <p className="text-gray-600 mb-4">No pages yet</p>
-          <p className="text-sm text-gray-500">Create your first page to get started</p>
+          <p className="text-gray-600">No pages yet</p>
         </div>
       ) : (
         <div className="bg-white shadow-md rounded-lg overflow-hidden">

@@ -1,0 +1,32 @@
+# Fly.io configuration for tyOS API
+# Learn more: https://fly.io/docs/reference/configuration/
+
+app = "tyos-api"
+primary_region = "sjc"  # San Jose, CA
+
+[build]
+  dockerfile = "api/Dockerfile"
+  build-target = "production"
+
+[env]
+  PORT = "8080"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0  # Scale to zero when idle
+
+  [[http_service.checks]]
+    interval = "15s"
+    timeout = "3s"
+    grace_period = "10s"
+    method = "GET"
+    path = "/health"
+    protocol = "http"
+
+[[vm]]
+  memory = "512mb"
+  cpu_kind = "shared"
+  cpus = 1

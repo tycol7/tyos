@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { apiRequest } from '../lib/api-client';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { apiRequest, clearSessionToken } from '../lib/api-client';
 
 export default function Navigation() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [deploying, setDeploying] = useState(false);
 
   const isActive = (path: string) => {
@@ -59,6 +60,13 @@ export default function Navigation() {
       console.error('Deploy error:', err);
     } finally {
       setDeploying(false);
+    }
+  };
+
+  const handleLogout = () => {
+    if (confirm('Are you sure you want to logout?')) {
+      clearSessionToken();
+      navigate('/login');
     }
   };
 
@@ -128,6 +136,22 @@ export default function Navigation() {
                 />
               </svg>
               {deploying ? 'Deploying...' : 'Deploy Production'}
+            </button>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="px-3 py-1.5 bg-red-500 text-white text-sm rounded-md hover:bg-red-600 transition-colors flex items-center gap-1.5"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <title>Logout icon</title>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                />
+              </svg>
+              Logout
             </button>
           </div>
         </div>

@@ -9,13 +9,16 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@netlify/functions": "^2.8.2",
     "@tiptap/extension-image": "^3.14.0",
     "@tiptap/extension-link": "^3.14.0",
     "@tiptap/pm": "^3.14.0",
     "@tiptap/react": "^3.14.0",
     "@tiptap/starter-kit": "^3.14.0",
     "@tyos/db": "workspace:*",
+    "@types/jsonwebtoken": "^9.0.7",
     "@types/turndown": "^5.0.6",
+    "jsonwebtoken": "^9.0.2",
     "marked": "^17.0.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

@@ -17,7 +17,11 @@ postsRouter.use('*', authMiddleware);
 
 // GET /posts - List all posts
 postsRouter.get('/', async (c) => {
-  const allPosts = await db.select().from(posts).orderBy(desc(posts.updatedAt));
+  // Sort by pubDate (newest first), with unpublished posts (null pubDate) at the end
+  const allPosts = await db
+    .select()
+    .from(posts)
+    .orderBy(sql`${posts.pubDate} IS NULL, ${posts.pubDate} DESC`);
 
   return c.json({
     posts: allPosts.map((post) => ({

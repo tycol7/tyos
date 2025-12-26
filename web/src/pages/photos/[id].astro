@@ -38,21 +38,36 @@ const breadcrumbs = [
   <h2>{album.name}</h2>
   {
     albumPhotos.map((photo) => (
-      <picture>
-        <source
-          type="image/avif"
-          srcset={getVariantUrl(album.id, photo.filename, 1920, 'avif')}
-        />
-        <source
-          type="image/webp"
-          srcset={getVariantUrl(album.id, photo.filename, 1920, 'webp')}
-        />
-        <img
-          src={getVariantUrl(album.id, photo.filename, 1920, 'jpeg')}
-          alt={`${album.name} - ${photo.filename}`}
-          loading="lazy"
-        />
-      </picture>
+      <div class="photo-container">
+        <picture>
+          <source
+            type="image/avif"
+            srcset={getVariantUrl(album.id, photo.filename, 1920, 'avif')}
+          />
+          <source
+            type="image/webp"
+            srcset={getVariantUrl(album.id, photo.filename, 1920, 'webp')}
+          />
+          <img
+            src={getVariantUrl(album.id, photo.filename, 1920, 'jpeg')}
+            alt={`${album.name} - ${photo.filename}`}
+            loading="lazy"
+          />
+        </picture>
+        {photo.camera && (
+          <p class="photo-metadata">
+            {[
+              photo.camera,
+              photo.lens,
+              photo.fStop,
+              photo.shutterSpeed,
+              photo.iso ? `ISO ${photo.iso}` : null,
+            ]
+              .filter(Boolean)
+              .join(' · ')}
+          </p>
+        )}
+      </div>
     ))
   }
   <nav>
@@ -68,8 +83,17 @@ const breadcrumbs = [
 </Layout>
 
 <style>
+  .photo-container {
+    margin-bottom: 2rem;
+  }
+
   picture {
     display: block;
-    margin-bottom: 1rem;
+  }
+
+  .photo-metadata {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--pico-muted-color);
   }
 </style>

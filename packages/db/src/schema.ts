@@ -25,6 +25,12 @@ export const photos = sqliteTable(
     filename: text('filename').notNull(), // Original filename
     isHero: integer('is_hero', { mode: 'boolean' }).notNull().default(false), // Is this the hero/thumbnail for the album?
     sortOrder: integer('sort_order').notNull().default(0), // Manual sort order
+    // EXIF metadata
+    camera: text('camera'), // Camera model (e.g., "Fujifilm X100F")
+    lens: text('lens'), // Lens focal length (e.g., "24mm", "RF 24-70mm F2.8")
+    fStop: text('f_stop'), // Aperture (e.g., "f/2.8")
+    shutterSpeed: text('shutter_speed'), // Exposure time (e.g., "1/500s")
+    iso: text('iso'), // ISO sensitivity (e.g., "200")
     createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
     updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
   },

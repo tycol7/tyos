@@ -74,22 +74,10 @@ export default function AlbumDetail() {
     setDeletingPhotoId(photoId);
 
     try {
-      const API_BASE_URL = import.meta.env.VITE_API_URL;
-      const API_AUTH_TOKEN = import.meta.env.VITE_API_AUTH_TOKEN;
-
-      const response = await fetch(`${API_BASE_URL}/photos/${photoId}`, {
+      // Delete photo via API (goes through Netlify proxy)
+      await apiRequest(`/photos/${photoId}`, {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(API_AUTH_TOKEN ? { Authorization: `Bearer ${API_AUTH_TOKEN}` } : {}),
-        },
-        credentials: 'include',
       });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Delete failed: ${errorText}`);
-      }
 
       // Refresh album data to remove deleted photo
       if (albumId) {
@@ -119,23 +107,11 @@ export default function AlbumDetail() {
       formData.append('file', file);
       formData.append('isHero', 'false');
 
-      // Upload to API (uses existing endpoint)
-      const API_BASE_URL = import.meta.env.VITE_API_URL;
-      const API_AUTH_TOKEN = import.meta.env.VITE_API_AUTH_TOKEN;
-
-      const response = await fetch(`${API_BASE_URL}/photos/albums/${albumId}/photos`, {
+      // Upload to API via Netlify proxy (preserves FormData)
+      await apiRequest(`/photos/albums/${albumId}/photos`, {
         method: 'POST',
-        headers: {
-          ...(API_AUTH_TOKEN ? { Authorization: `Bearer ${API_AUTH_TOKEN}` } : {}),
-        },
         body: formData,
-        credentials: 'include',
       });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Upload failed: ${errorText}`);
-      }
 
       // Refresh album data to show new photo
       const refreshedData = await apiRequest<AlbumDetailResponse>(`/albums/${albumId}`);

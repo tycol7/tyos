@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TurndownService from 'turndown';
 import PostForm from '../components/PostForm';
+import { apiRequest } from '../lib/api-client';
 
 interface CreatePostResponse {
   post: PostResponse;
@@ -60,10 +61,6 @@ export default function PostNew() {
       const html = editor.getHTML();
       const markdown = turndownService.turndown(html);
 
-      // Create post via API
-      const API_BASE_URL = import.meta.env.VITE_API_URL;
-      const API_AUTH_TOKEN = import.meta.env.VITE_API_AUTH_TOKEN;
-
       const body = {
         title,
         slug,
@@ -71,22 +68,11 @@ export default function PostNew() {
         pubDate: isPublished ? Date.now() : null,
       };
 
-      const response = await fetch(`${API_BASE_URL}/posts`, {
+      // Create post via API (goes through Netlify proxy)
+      const data: CreatePostResponse = await apiRequest('/posts', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(API_AUTH_TOKEN ? { Authorization: `Bearer ${API_AUTH_TOKEN}` } : {}),
-        },
-        credentials: 'include',
         body: JSON.stringify(body),
       });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Save failed: ${errorText}`);
-      }
-
-      const data: CreatePostResponse = await response.json();
 
       // Navigate to the newly created post
       navigate(`/posts/${data.post.id}`);

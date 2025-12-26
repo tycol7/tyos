@@ -62,10 +62,15 @@ export async function apiRequest<T>(endpoint: string, options?: RequestInit): Pr
   }
 
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
     Authorization: `Bearer ${sessionToken}`, // JWT session token
     ...(options?.headers as Record<string, string>),
   };
+
+  // Only set Content-Type for JSON requests (let browser set it for FormData)
+  const isFormData = options?.body instanceof FormData;
+  if (!isFormData) {
+    headers['Content-Type'] = 'application/json';
+  }
 
   // Proxy all requests through Netlify Function
   const response = await fetch(`/.netlify/functions/api-proxy${endpoint}`, {

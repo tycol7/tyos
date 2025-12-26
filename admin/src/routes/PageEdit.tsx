@@ -89,30 +89,17 @@ export default function PageEdit() {
       const html = editor.getHTML();
       const markdown = turndownService.turndown(html);
 
-      // Update page via API
-      const API_BASE_URL = import.meta.env.VITE_API_URL;
-      const API_AUTH_TOKEN = import.meta.env.VITE_API_AUTH_TOKEN;
-
       const body: UpdatePageInput = {
         title,
         slug,
         content: markdown,
       };
 
-      const response = await fetch(`${API_BASE_URL}/pages/${pageId}`, {
+      // Update page via API (goes through Netlify proxy)
+      await apiRequest(`/pages/${pageId}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(API_AUTH_TOKEN ? { Authorization: `Bearer ${API_AUTH_TOKEN}` } : {}),
-        },
-        credentials: 'include',
         body: JSON.stringify(body),
       });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Save failed: ${errorText}`);
-      }
 
       // Navigate back to page detail
       navigate(`/pages/${pageId}`);

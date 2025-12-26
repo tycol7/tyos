@@ -46,13 +46,21 @@ export const handler: Handler = async (event: HandlerEvent, _context: HandlerCon
   const apiUrl = `${API_URL}${path}${event.rawQuery ? `?${event.rawQuery}` : ''}`;
 
   try {
+    // Build headers for the API request
+    const apiHeaders: Record<string, string> = {
+      Authorization: `Bearer ${API_AUTH_TOKEN}`, // Use the server-side API token
+    };
+
+    // Preserve Content-Type from original request (for FormData, JSON, etc.)
+    const contentType = event.headers['content-type'] || event.headers['Content-Type'];
+    if (contentType) {
+      apiHeaders['Content-Type'] = contentType;
+    }
+
     // Proxy the request to the Fly.io API
     const response = await fetch(apiUrl, {
       method: event.httpMethod,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${API_AUTH_TOKEN}`, // Use the server-side API token
-      },
+      headers: apiHeaders,
       body: event.body || undefined,
     });
 

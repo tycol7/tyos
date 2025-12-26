@@ -92,10 +92,6 @@ export default function PostEdit() {
       const html = editor.getHTML();
       const markdown = turndownService.turndown(html);
 
-      // Update post via API
-      const API_BASE_URL = import.meta.env.VITE_API_URL;
-      const API_AUTH_TOKEN = import.meta.env.VITE_API_AUTH_TOKEN;
-
       const body: UpdatePostInput = {
         title,
         slug,
@@ -112,20 +108,11 @@ export default function PostEdit() {
       }
       // If already published and staying published, don't change pubDate
 
-      const response = await fetch(`${API_BASE_URL}/posts/${postId}`, {
+      // Update post via API (goes through Netlify proxy)
+      await apiRequest(`/posts/${postId}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(API_AUTH_TOKEN ? { Authorization: `Bearer ${API_AUTH_TOKEN}` } : {}),
-        },
-        credentials: 'include',
         body: JSON.stringify(body),
       });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Save failed: ${errorText}`);
-      }
 
       // Navigate back to post detail
       navigate(`/posts/${postId}`);

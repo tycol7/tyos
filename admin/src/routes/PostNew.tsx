@@ -1,22 +1,14 @@
-import Image from '@tiptap/extension-image';
-import Link from '@tiptap/extension-link';
-import { useEditor } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
 import type { PostResponse } from '@tyos/db';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import TurndownService from 'turndown';
 import PostForm from '../components/PostForm';
+import { useMarkdownEditor } from '../hooks/useMarkdownEditor';
 import { apiRequest } from '../lib/api-client';
+import { turndownService } from '../lib/markdown';
 
 interface CreatePostResponse {
   post: PostResponse;
 }
-
-const turndownService = new TurndownService({
-  headingStyle: 'atx',
-  codeBlockStyle: 'fenced',
-});
 
 export default function PostNew() {
   const navigate = useNavigate();
@@ -26,29 +18,7 @@ export default function PostNew() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const editor = useEditor({
-    extensions: [
-      StarterKit,
-      Link.configure({
-        openOnClick: false,
-        HTMLAttributes: {
-          class: 'text-blue-600 underline',
-        },
-      }),
-      Image.configure({
-        HTMLAttributes: {
-          class: 'max-w-full h-auto',
-        },
-      }),
-    ],
-    content: '',
-    editorProps: {
-      attributes: {
-        class:
-          'prose prose-lg max-w-none focus:outline-none min-h-[400px] p-4 border border-gray-300 rounded-md',
-      },
-    },
-  });
+  const editor = useMarkdownEditor();
 
   const handleSave = async () => {
     if (!editor) return;

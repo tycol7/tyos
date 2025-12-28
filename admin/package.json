@@ -18,6 +18,7 @@
     "@tyos/db": "workspace:*",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/turndown": "^5.0.6",
+    "dompurify": "^3.3.1",
     "jsonwebtoken": "^9.0.2",
     "marked": "^17.0.1",
     "react": "^18.3.1",
@@ -28,6 +29,7 @@
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.19",
+    "@types/dompurify": "^3.2.0",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.4",

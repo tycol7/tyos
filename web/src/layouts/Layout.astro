@@ -38,7 +38,12 @@ const links = [
   </head>
   <body>
     <header class="container">
-      <div>
+      <div class="profile-pic">
+        <a href="/">
+          <Picture src={tyler} alt="Tyler Coleman" width={240} height={240} />
+        </a>
+      </div>
+      <div class="header-content">
         <h1><a href="/">Tyler Coleman</a></h1>
         <!-- Mobile navigation (stacked) -->
         <aside class="mobile-only">
@@ -72,9 +77,6 @@ const links = [
           </ul>
         </nav>
       </div>
-      <div>
-        <Picture src={tyler} alt="Tyler Coleman" width={240} height={240} />
-      </div>
     </header>
     <hr />
     <main class="container">
@@ -98,8 +100,57 @@ const links = [
       height: 120px;
     }
 
+    .profile-pic {
+      a {
+        display: block;
+        line-height: 0;
+      }
+    }
+
     @media (max-width: 768px) {
       flex-direction: column;
+
+      .profile-pic {
+        order: -1;
+        margin-bottom: 1rem;
+      }
+
+      .header-content {
+        display: flex;
+        flex-direction: column;
+
+        h1 {
+          order: 0;
+        }
+
+        .mobile-only {
+          order: 1;
+        }
+      }
+
+      .mobile-only {
+        nav ul {
+          margin-top: 0;
+          margin-bottom: 0.5rem;
+          padding-left: 1rem;
+
+          li {
+            margin-bottom: 0;
+            padding: 0;
+
+            a {
+              padding: 0.5rem 0;
+              display: block;
+            }
+          }
+        }
+      }
+    }
+
+    @media (min-width: 769px) {
+      .profile-pic {
+        order: 1;
+      }
     }
 
     .mobile-only {

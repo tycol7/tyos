@@ -1,21 +1,12 @@
 import type { PageResponse } from '@tyos/db';
 import { useEffect, useState } from 'react';
-import Markdown from 'react-markdown';
 import { useNavigate, useParams } from 'react-router-dom';
+import MarkdownContent from '../components/MarkdownContent';
 import { apiRequest } from '../lib/api-client';
+import { formatDate } from '../lib/date';
 
 interface PageDetailResponse {
   page: PageResponse;
-}
-
-function formatDate(timestamp: number): string {
-  return new Date(timestamp).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
 }
 
 export default function PageDetail() {
@@ -109,9 +100,7 @@ export default function PageDetail() {
         </div>
 
         {/* Content section */}
-        <div className="prose prose-lg max-w-none">
-          <Markdown>{page.content}</Markdown>
-        </div>
+        <MarkdownContent content={page.content} />
       </div>
     </div>
   );

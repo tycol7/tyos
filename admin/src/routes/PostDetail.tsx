@@ -1,21 +1,12 @@
 import type { PostResponse } from '@tyos/db';
 import { useEffect, useState } from 'react';
-import Markdown from 'react-markdown';
 import { useNavigate, useParams } from 'react-router-dom';
+import MarkdownContent from '../components/MarkdownContent';
 import { apiRequest } from '../lib/api-client';
+import { formatDate } from '../lib/date';
 
 interface PostDetailResponse {
   post: PostResponse;
-}
-
-function formatDate(timestamp: number): string {
-  return new Date(timestamp).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
 }
 
 export default function PostDetail() {
@@ -125,9 +116,7 @@ export default function PostDetail() {
         </div>
 
         {/* Content section */}
-        <div className="prose prose-lg max-w-none">
-          <Markdown>{post.content}</Markdown>
-        </div>
+        <MarkdownContent content={post.content} />
       </div>
     </div>
   );

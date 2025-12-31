@@ -2,7 +2,6 @@
  * EXIF metadata extraction utilities
  */
 
-// @ts-ignore - exif-reader doesn't have TypeScript types
 import exifReader from 'exif-reader';
 
 export interface ExifData {
@@ -54,11 +53,11 @@ export function extractExifData(exifBuffer: Buffer): ExifData {
     const exif = exifReader(exifBuffer);
 
     return {
-      camera: exif.image?.Model || null,
-      lens: formatFocalLength(exif.exif?.FocalLength),
-      fStop: formatFNumber(exif.exif?.FNumber),
-      shutterSpeed: formatExposureTime(exif.exif?.ExposureTime),
-      iso: exif.exif?.ISO?.toString() || null,
+      camera: exif.Image?.Model || null,
+      lens: formatFocalLength(exif.Photo?.FocalLength),
+      fStop: formatFNumber(exif.Photo?.FNumber),
+      shutterSpeed: formatExposureTime(exif.Photo?.ExposureTime),
+      iso: exif.Photo?.ISOSpeedRatings?.toString() || null,
     };
   } catch (error) {
     console.error('Failed to parse EXIF data:', error);

@@ -38,6 +38,7 @@ export function postsLoader(): Loader {
           data: {
             title: post.title,
             pubDate: post.pubDate,
+            updatedAt: post.updatedAt,
             slug: post.slug,
             dbId: post.id, // Keep the UUID for database queries
             renderedContent: await renderMarkdown(post.content), // Pre-rendered HTML

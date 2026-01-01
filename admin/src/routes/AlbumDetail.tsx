@@ -1,5 +1,8 @@
+import { DndContext, type DragEndEvent, closestCenter } from '@dnd-kit/core';
+import { SortableContext, arrayMove } from '@dnd-kit/sortable';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { SortablePhotoCard } from '../components/SortablePhotoCard';
 import { apiRequest } from '../lib/api-client';
 
 interface Photo {
@@ -23,13 +26,6 @@ interface AlbumDetailResponse {
   photos: Photo[];
 }
 
-const R2_PUBLIC_URL = import.meta.env.VITE_R2_PUBLIC_URL;
-
-function getPhotoUrl(albumId: string, filename: string, width = 800): string {
-  const nameWithoutExt = filename.replace(/\.[^.]+$/, '');
-  return `${R2_PUBLIC_URL}/albums/${albumId}/${nameWithoutExt}_${width}w.webp`;
-}
-
 export default function AlbumDetail() {
   const { albumId } = useParams<{ albumId: string }>();
   const navigate = useNavigate();
@@ -39,6 +35,8 @@ export default function AlbumDetail() {
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [deletingPhotoId, setDeletingPhotoId] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -129,6 +127,64 @@ export default function AlbumDetail() {
     }
   };
 
+  const saveOrderToServer = async (updatedPhotos: Photo[]) => {
+    setIsSaving(true);
+    setSaveError(null);
+
+    try {
+      const payload = {
+        photos: updatedPhotos.map((p) => ({
+          id: p.id,
+          sortOrder: p.sortOrder,
+          isHero: p.isHero,
+        })),
+      };
+
+      await apiRequest(`/photos/albums/${albumId}/photos`, {
+        method: 'PUT',
+        body: JSON.stringify(payload),
+        headers: { 'Content-Type': 'application/json' },
+      });
+    } catch (error) {
+      setSaveError('Failed to save order');
+      console.error('Save order error:', error);
+
+      // Rollback: refetch to restore server state
+      if (albumId) {
+        const refreshed = await apiRequest<AlbumDetailResponse>(`/albums/${albumId}`);
+        setData(refreshed);
+      }
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) return;
+
+    if (!data) return;
+
+    const oldIndex = data.photos.findIndex((p) => p.id === active.id);
+    const newIndex = data.photos.findIndex((p) => p.id === over.id);
+
+    // Reorder array
+    const reordered = arrayMove(data.photos, oldIndex, newIndex);
+
+    // Recalculate sortOrder (0-indexed sequential)
+    const updated = reordered.map((photo, index) => ({
+      ...photo,
+      sortOrder: index,
+    }));
+
+    // Optimistic update
+    setData({ ...data, photos: updated });
+
+    // Save to server
+    saveOrderToServer(updated);
+  };
+
   if (loading) {
     return (
       <div>
@@ -178,7 +234,9 @@ export default function AlbumDetail() {
             {album.description && <p className="text-gray-600 text-lg">{album.description}</p>}
             <p className="text-sm text-gray-500 mt-2">
               {photos.length} {photos.length === 1 ? 'photo' : 'photos'}
+              {isSaving && <span className="ml-2 text-blue-600">Saving...</span>}
             </p>
+            {saveError && <p className="text-red-600 text-sm mt-2">{saveError}</p>}
           </div>
           <button
             type="button"
@@ -214,39 +272,22 @@ export default function AlbumDetail() {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {photos.map((photo) => (
-            <div
-              key={photo.id}
-              className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow relative group"
-            >
-              <div className="aspect-square bg-gray-200 overflow-hidden">
-                <img
-                  src={getPhotoUrl(album.id, photo.filename)}
-                  alt={`${album.name} - ${photo.sortOrder + 1}`}
-                  className="w-full h-full object-cover"
+        <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext items={photos.map((p) => p.id)}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {photos.map((photo) => (
+                <SortablePhotoCard
+                  key={photo.id}
+                  photo={photo}
+                  album={album}
+                  onDelete={handleDeletePhoto}
+                  deletingPhotoId={deletingPhotoId}
+                  disabled={isSaving}
                 />
-              </div>
-              {photo.isHero && (
-                <div className="absolute top-2 right-2 bg-yellow-500 text-white text-xs px-2 py-1 rounded">
-                  Hero
-                </div>
-              )}
-              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-opacity" />
-
-              {/* Delete button - shows on hover */}
-              <button
-                type="button"
-                onClick={() => handleDeletePhoto(photo.id)}
-                disabled={deletingPhotoId === photo.id}
-                className="absolute bottom-2 right-2 bg-red-600 text-white px-3 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-                title="Delete photo"
-              >
-                {deletingPhotoId === photo.id ? 'Deleting...' : 'Delete'}
-              </button>
+              ))}
             </div>
-          ))}
-        </div>
+          </SortableContext>
+        </DndContext>
       )}
     </div>
   );

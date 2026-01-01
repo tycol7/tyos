@@ -3,7 +3,8 @@
 
 [build]
   # Base directory for the build
-  base = "admin/"
+  # (empty when running from admin directory)
+  base = ""
 
   # Directory to publish (relative to base)
   publish = "dist/"
@@ -12,6 +13,14 @@
   command = "bun run build"
 
   # Functions directory
+  functions = "netlify/functions"
+
+# Local development configuration
+[dev]
+  command = "bunx vite"
+  targetPort = 5173
+  framework = "#custom"
+  publish = "dist"
   functions = "netlify/functions"
 
 # SPA routing: serve index.html for all non-file routes

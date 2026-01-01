@@ -34,6 +34,26 @@ const breadcrumbs = [
     </em>
   </p>
   <article set:html={post.data.renderedContent.html} />
+  <p style="margin-top: 2rem; font-size: 0.875rem; color: #666;">
+    <em>
+      First published on: {post.data.pubDate?.toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      })}
+      {post.data.updatedAt && post.data.pubDate &&
+       post.data.updatedAt.getTime() !== post.data.pubDate.getTime() &&
+       <span>
+         <br />
+         Last updated on: {post.data.updatedAt.toLocaleDateString("en-US", {
+           month: "long",
+           day: "numeric",
+           year: "numeric",
+         })}
+       </span>
+      }
+    </em>
+  </p>
   <nav>
     <ul>
       <li>

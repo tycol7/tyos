@@ -8,6 +8,7 @@ const posts = defineCollection({
   schema: z.object({
     title: z.string(),
     pubDate: z.coerce.date().nullable(),
+    updatedAt: z.coerce.date(),
     slug: z.string(),
     dbId: z.string(), // Database UUID
     renderedContent: z.object({
